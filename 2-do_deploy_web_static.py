@@ -5,7 +5,7 @@ distributes an archive to web servers
 from fabric.api import *
 from fabric.operations import run, put, sudo
 import os.path
-env.hosts = ['142.44.167.241', '144.217.246.212']
+env.hosts = ['52.55.249.213', '54.157.32.137']
 #env.user = 'ubuntu'
 
 
