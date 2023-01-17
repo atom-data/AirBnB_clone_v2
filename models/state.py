@@ -1,37 +1,32 @@
 #!/usr/bin/python3
-"""This is the state class"""
+""" holds class State"""
+import models
 from models.base_model import BaseModel, Base
+import sqlalchemy
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
-from os import environ
 
 
 class State(BaseModel, Base):
-    """This is the class for State
-    Attributes:
-        __tablename__: name of MySQL table
-        name: input name
-    """
-    __tablename__ = 'states'
-    name = Column(String(128), nullable=False)
-
-    if environ['HBNB_TYPE_STORAGE'] == 'db':
-        cities = relationship('City', cascade='all, delete', backref='state')
+    """Representation of state """
+    if models.storage_type == "db":
+        __tablename__ = 'states'
+        name = Column(String(128), nullable=False)
+        cities = relationship("City", backref="states")
     else:
+        name = ""
+
+    if models.storage_type == "db":
         @property
         def cities(self):
-            """Getter method for cities
-            Return: list of cities with state_id equal to self.id
-            """
-            from models import storage
-            from models.city import City
-            # return list of City objs in __objects
-            cities_dict = storage.all(City)
-            cities_list = []
+            """Get City instances"""
+            list = []
+            c = models.storage.all("City").values()
+            for item in c:
+                if item.state_id == self.id:
+                    list.append(item)
+            return list
 
-            # copy values from dict to list
-            for city in cities_dict.values():
-                if city.state_id == self.id:
-                    cities_list.append(city)
-
-            return cities_list
+    def __init__(self, *args, **kwargs):
+        """initializes state"""
+        super().__init__(*args, **kwargs)
